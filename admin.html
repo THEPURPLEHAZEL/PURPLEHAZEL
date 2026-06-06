@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PURPLEHAZEL — Admin</title>
+<link rel="icon" type="image/png" href="assets/logo.png"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0c0a12;--s1:#161320;--s2:#1d1830;--accent:#c425e3;--text:#f0f2f5;--text2:#9aa0b0;--border:rgba(255,255,255,0.08);--mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);padding:32px;max-width:1100px;margin:0 auto;}
+h1{font-family:var(--mono);color:var(--accent);font-size:20px;margin-bottom:8px;}
+.subtitle{color:var(--text2);font-size:13px;margin-bottom:32px;}
+.key-form{display:flex;gap:10px;margin-bottom:32px;}
+.key-form input{flex:1;padding:12px 16px;background:var(--s1);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:13px;}
+.key-form input:focus{outline:none;border-color:var(--accent);}
+.key-form button{padding:12px 24px;background:var(--accent);color:#fff;font-weight:700;border:none;border-radius:8px;cursor:pointer;font-size:13px;white-space:nowrap;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:32px;}
+.stat-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:20px;}
+.stat-num{font-family:var(--mono);font-size:28px;font-weight:700;color:var(--accent);}
+.stat-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px;}
+h2{font-size:15px;font-weight:600;margin:24px 0 12px;display:flex;align-items:center;gap:8px;}
+h2::before{content:'';width:3px;height:16px;background:var(--accent);border-radius:2px;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{text-align:left;padding:10px 12px;background:var(--s1);color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;font-size:10px;border-bottom:1px solid var(--border);}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text2);}
+tr:hover td{background:rgba(196,37,227,0.05);}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;text-transform:uppercase;}
+.tag-email{background:rgba(0,200,150,0.15);color:#00c896;}
+.tag-wallet{background:rgba(171,159,242,0.15);color:#ab9ff2;}
+.empty{text-align:center;padding:48px;color:var(--text2);font-size:13px;}
+#content{display:none;}
+</style>
+</head>
+<body>
+<h1>PURPLEHAZEL ADMIN</h1>
+<p class="subtitle">User management & analytics dashboard</p>
+
+<div class="key-form">
+  <input type="password" id="adminKey" placeholder="Enter admin key..." onkeydown="if(event.key==='Enter')loadAdmin()"/>
+  <button onclick="loadAdmin()">Authenticate</button>
+</div>
+
+<div id="content">
+  <div class="stats-grid" id="statsGrid"></div>
+  <h2>Users</h2>
+  <table id="usersTable"><thead><tr><th>Email / Wallet</th><th>Type</th><th>Tier</th><th>Logins</th><th>Joined</th><th>Last Login</th></tr></thead><tbody></tbody></table>
+  <h2>Recent Waitlist</h2>
+  <table id="waitlistTable"><thead><tr><th>Value</th><th>Type</th><th>IP</th><th>Date</th><th>Verified</th></tr></thead><tbody></tbody></table>
+</div>
+
+<script>
+async function loadAdmin() {
+  const key = document.getElementById('adminKey').value.trim();
+  if (!key) return;
+  try {
+    const res = await fetch('api/admin.php?key=' + encodeURIComponent(key));
+    const data = await res.json();
+    if (!data.ok) { alert(data.error || 'Unauthorized'); return; }
+    document.getElementById('content').style.display = 'block';
+    renderStats(data.stats);
+    renderUsers(data.users);
+    renderWaitlist(data.recent_waitlist);
+  } catch(e) { alert('Connection error'); }
+}
+
+function renderStats(s) {
+  const grid = document.getElementById('statsGrid');
+  const items = [
+    ['Total Users', s.total_users], ['Email Users', s.email_users], ['Wallet Users', s.wallet_users],
+    ['Active Sessions', s.active_sessions], ['Waitlist Total', s.waitlist_total], ['Signups (24h)', s.signups_24h],
+  ];
+  grid.innerHTML = items.map(([l,v]) => `<div class="stat-card"><div class="stat-num">${v}</div><div class="stat-label">${l}</div></div>`).join('');
+}
+
+function renderUsers(users) {
+  const tbody = document.querySelector('#usersTable tbody');
+  if (!users.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">No users yet</td></tr>'; return; }
+  tbody.innerHTML = users.map(u => `<tr>
+    <td style="color:var(--text);font-family:var(--mono);font-size:11px;">${u.email || u.wallet || '-'}</td>
+    <td><span class="tag ${u.email?'tag-email':'tag-wallet'}">${u.email?'email':'wallet'}</span></td>
+    <td>${u.tier}</td><td>${u.login_count}</td>
+    <td>${new Date(u.created_at).toLocaleDateString()}</td>
+    <td>${u.last_login ? new Date(u.last_login).toLocaleString() : '-'}</td>
+  </tr>`).join('');
+}
+
+function renderWaitlist(list) {
+  const tbody = document.querySelector('#waitlistTable tbody');
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty">No entries yet</td></tr>'; return; }
+  tbody.innerHTML = list.map(w => `<tr>
+    <td style="font-family:var(--mono);font-size:11px;">${w.value}</td>
+    <td><span class="tag ${w.type==='email'?'tag-email':'tag-wallet'}">${w.type}</span></td>
+    <td style="font-size:11px;">${w.ip||'-'}</td>
+    <td>${new Date(w.created_at).toLocaleDateString()}</td>
+    <td>${w.verified ? '✅' : '❌'}</td>
+  </tr>`).join('');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PURPLEHAZEL — Console</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;width:100%;}
+body{overflow-y:auto;overflow-x:hidden;}
+button{background:none;border:none;color:inherit;cursor:pointer;font:inherit;}
+a{color:inherit;text-decoration:none;}
+input,textarea,select{font:inherit;}
+:root{
+  --bg:#07060d;--bg2:#0c0a16;--bg3:#14111f;--bg4:#1c1830;--bg5:#241d3a;
+  --acc:#c425e3;--acc2:#8a18a0;--acc3:rgba(196,37,227,0.14);--acc4:rgba(196,37,227,0.07);
+  --text:#f3f0ff;--text2:#b0a8cc;--text3:#6a5f80;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --green:#51cf66;--red:#ff6b6b;--amber:#f59e0b;--blue:#60a5fa;
+  --mono:'JetBrains Mono',monospace;--r:8px;
+  --glow:0 0 30px rgba(196,37,227,0.28);
+}
+body{font-family:'Inter',sans-serif;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;}
+::selection{background:var(--acc);color:#fff;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:6px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text3);}
+
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 0%,rgba(196,37,227,0.06),transparent 60%),
+    radial-gradient(ellipse 50% 30% at 90% 100%,rgba(138,24,160,0.06),transparent 60%);
+}
+
+/* TOPBAR */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  height:60px;padding:0 24px;
+  background:rgba(7,6,13,0.9);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand img{height:32px;width:auto;filter:drop-shadow(0 0 12px rgba(196,37,227,0.5));}
+.brand-txt{display:flex;flex-direction:column;line-height:1;}
+.brand-txt .n{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--text);letter-spacing:-0.02em;}
+.brand-txt .s{font-size:9px;letter-spacing:0.2em;color:var(--text3);text-transform:uppercase;margin-top:3px;}
+.topbar-r{display:flex;align-items:center;gap:10px;margin-left:auto;}
+.pill-status{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 12px;
+  border:1px solid rgba(196,37,227,0.3);border-radius:999px;
+  background:rgba(196,37,227,0.07);
+  font-family:var(--mono);font-size:10px;font-weight:600;
+  color:var(--acc);letter-spacing:0.1em;
+}
+.s-dot{width:6px;height:6px;border-radius:50%;background:var(--acc);box-shadow:0 0 8px rgba(196,37,227,0.9);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.35;}}
+.t-btn{
+  display:inline-flex;align-items:center;gap:6px;padding:7px 14px;
+  border:1px solid var(--border2);border-radius:var(--r);
+  font-size:11px;font-weight:500;color:var(--text2);
+  transition:all 0.15s;
+}
+.t-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.2);background:var(--bg3);}
+.t-btn iconify-icon{font-size:14px;}
+.t-btn.primary{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:600;}
+.t-btn.primary:hover{box-shadow:var(--glow);transform:translateY(-1px);}
+
+/* TABS NAV */
+.tabs-nav{
+  position:sticky;top:60px;z-index:40;
+  background:rgba(12,10,22,0.9);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.tabs-inner{
+  max-width:1400px;margin:0 auto;padding:0 24px;
+  display:flex;gap:2px;align-items:center;
+  overflow-x:auto;
+}
+.tab-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:14px 18px;
+  font-size:13px;font-weight:500;color:var(--text3);
+  border-bottom:2px solid transparent;
+  transition:all 0.15s;white-space:nowrap;
+  position:relative;
+}
+.tab-btn:hover{color:var(--text2);}
+.tab-btn.active{color:var(--acc);border-bottom-color:var(--acc);}
+.tab-btn iconify-icon{font-size:16px;}
+.tab-btn .count{
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  background:var(--bg4);color:var(--text2);
+  padding:2px 7px;border-radius:999px;margin-left:2px;
+}
+.tab-btn.active .count{background:var(--acc3);color:var(--acc);}
+
+/* LAYOUT */
+.page{max-width:1400px;margin:0 auto;padding:28px 24px 80px;position:relative;z-index:1;}
+
+.tab-pane{display:none;}
+.tab-pane.active{display:block;animation:tabIn 0.3s cubic-bezier(0.16,1,0.3,1);}
+@keyframes tabIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.section-title{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.18em;color:var(--text3);
+  margin:28px 0 12px;
+}
+.section-title:first-child{margin-top:0;}
+.section-title .dash{flex:1;height:1px;background:var(--border);}
+
+/* OVERVIEW METRICS */
+.overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:14px;}
+.metric-big{
+  padding:20px 22px;border-radius:12px;
+  background:var(--bg2);border:1px solid var(--border);
+  display:flex;flex-direction:column;gap:14px;
+  position:relative;overflow:hidden;
+}
+.metric-big .mtop{display:flex;align-items:center;justify-content:space-between;}
+.metric-big .mlabel{font-size:11px;color:var(--text3);font-family:var(--mono);letter-spacing:0.12em;text-transform:uppercase;}
+.metric-big .micn{
+  width:30px;height:30px;border-radius:7px;
+  background:var(--acc4);border:1px solid rgba(196,37,227,0.2);
+  display:flex;align-items:center;justify-content:center;color:var(--acc);
+}
+.metric-big .micn iconify-icon{font-size:15px;}
+.metric-big .mval{font-family:var(--mono);font-size:32px;font-weight:700;color:var(--text);letter-spacing:-0.03em;line-height:1;}
+.metric-big .mval .slash{color:var(--text3);}
+.metric-big .mdelta{font-size:11px;color:var(--text3);font-family:var(--mono);display:flex;align-items:center;gap:6px;}
+.metric-big .mdelta .up{color:var(--green);}
+.metric-big .mdelta .down{color:var(--red);}
+.metric-big .ministat{
+  display:inline-flex;align-items:center;gap:5px;padding:3px 8px;
+  border-radius:4px;background:rgba(81,207,102,0.1);
+  font-size:10px;font-weight:600;color:var(--green);font-family:var(--mono);
+}
+.metric-big .ministat .sd{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);}
+
+/* TWO COL */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr;}}
+
+/* PANEL */
+.panel{
+  background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;
+}
+.panel-hd{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 18px;border-bottom:1px solid var(--border);
+}
+.panel-hd h3{font-size:13px;font-weight:600;letter-spacing:-0.01em;display:flex;align-items:center;gap:8px;}
+.panel-hd h3 iconify-icon{font-size:16px;color:var(--acc);}
+.panel-hd .hd-sub{font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;}
+.panel-body{padding:14px 18px;}
+
+/* Intro panel */
+.intro-panel{padding:20px 24px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);margin-bottom:14px;}
+.intro-panel p{font-size:13px;color:var(--text2);line-height:1.7;}
+.intro-panel p strong{color:var(--text);}
+.intro-panel .a{color:var(--acc);font-weight:500;}
+
+/* DS rows */
+.ds-row,.ag-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 0;border-bottom:1px solid var(--border);
+}
+.ds-row:last-child,.ag-row:last-child{border-bottom:none;}
+.ds-info,.ag-info{display:flex;align-items:center;gap:12px;flex:1;min-width:0;}
+.ds-icn,.ag-icn{
+  width:34px;height:34px;border-radius:7px;
+  background:var(--bg3);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text2);flex-shrink:0;
+}
+.ds-icn iconify-icon,.ag-icn iconify-icon{font-size:16px;}
+.ag-row.active .ag-icn{
+  background:var(--acc3);border-color:rgba(196,37,227,0.35);color:var(--acc);
+  box-shadow:0 0 12px rgba(196,37,227,0.18);
+}
+.ds-name,.ag-nm{font-size:12px;font-weight:500;color:var(--text);}
+.ds-desc,.ag-tg{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px;letter-spacing:0.05em;}
+.ds-status,.ag-st{
+  display:inline-flex;align-items:center;gap:5px;padding:4px 10px;
+  border-radius:999px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.04em;
+}
+.ds-status.ok{background:rgba(81,207,102,0.12);color:var(--green);}
+.ds-status.off{background:rgba(139,148,158,0.1);color:var(--text3);}
+.ds-status.warn{background:rgba(245,158,11,0.1);color:var(--amber);}
+.ds-status .d,.ag-st .d{width:5px;height:5px;border-radius:50%;background:currentColor;}
+.ag-st.running{background:rgba(196,37,227,0.16);color:var(--acc);}
+.ag-st.scanning{background:rgba(96,165,250,0.14);color:var(--blue);}
+.ag-st.standby{background:rgba(139,148,158,0.1);color:var(--text2);}
+.ag-st.ready{background:rgba(81,207,102,0.1);color:var(--green);}
+.ag-st.thinking{background:rgba(245,158,11,0.12);color:var(--amber);}
+.ag-st.running .d,.ag-st.scanning .d,.ag-st.thinking .d{animation:blink 1s infinite;}
+
+/* Activity log */
+.log-row{
+  display:grid;grid-template-columns:60px 1fr;gap:14px;
+  padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;
+}
+.log-row:last-child{border-bottom:none;}
+.log-time{font-family:var(--mono);color:var(--text3);font-size:11px;}
+.log-body{color:var(--text2);line-height:1.5;}
+.log-body .tag{
+  display:inline-block;padding:1px 7px;border-radius:3px;
+  font-family:var(--mono);font-size:10px;font-weight:600;
+  background:var(--acc3);color:var(--acc);margin-right:6px;
+}
+.log-body .arrow{color:var(--text3);margin:0 6px;}
+
+/* Chat */
+.chat-main{margin-top:20px;}
+.chat-box{
+  background:var(--bg2);border:1px solid var(--border);border-radius:12px;
+  padding:18px;display:flex;gap:10px;align-items:flex-end;
+  transition:border-color 0.15s;
+}
+.chat-box:focus-within{border-color:rgba(196,37,227,0.35);}
+.chat-box textarea{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--text);font-size:13px;line-height:1.6;resize:none;
+  min-height:44px;max-height:160px;
+}
+.chat-box textarea::placeholder{color:var(--text3);}
+.chat-send{
+  height:40px;padding:0 18px;
+  background:var(--acc);color:#fff;border-radius:8px;
+  font-size:12px;font-weight:700;letter-spacing:0.04em;
+  display:flex;align-items:center;gap:6px;
+  transition:all 0.15s;flex-shrink:0;
+}
+.chat-send:hover:not(:disabled){box-shadow:var(--glow);transform:translateY(-1px);}
+.chat-send:disabled{opacity:0.4;cursor:not-allowed;}
+
+.quick-chips{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.q-chip{
+  padding:6px 12px;border:1px solid var(--border2);border-radius:999px;
+  font-size:11px;color:var(--text2);font-family:var(--mono);
+  transition:all 0.15s;
+}
+.q-chip:hover{border-color:rgba(196,37,227,0.4);color:var(--acc);background:var(--acc4);}
+
+/* FLOW STEPS */
+.flow{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+.step{
+  display:grid;grid-template-columns:36px 1fr;gap:16px;
+  padding:14px 16px;border-radius:10px;
+  background:var(--bg2);border:1px solid var(--border);
+  transition:all 0.2s;
+}
+.step:hover{border-color:var(--border2);}
+.step-num{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text2);
+  grid-row:1/3;align-self:center;
+}
+.step-tag{
+  font-family:var(--mono);font-size:10px;font-weight:600;
+  color:var(--acc);letter-spacing:0.08em;margin-bottom:4px;
+  display:flex;align-items:center;gap:6px;
+}
+.step-tag .divider{color:var(--text3);}
+.step-tag .agent-name{color:var(--text2);text-transform:none;letter-spacing:0;}
+.step-body h4{font-size:13px;font-weight:600;margin-bottom:3px;}
+.step-body p{font-size:12px;color:var(--text3);line-height:1.6;}
+
+/* OUTPUT CARDS */
+.out-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:14px 16px;margin-bottom:10px;
+}
+.out-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.out-head-l{display:flex;align-items:center;gap:8px;}
+.out-head .tag{
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  padding:2px 8px;border-radius:4px;
+  background:var(--acc3);color:var(--acc);letter-spacing:0.06em;
+}
+.out-head .sep{color:var(--text3);}
+.out-head .lbl{font-size:12px;font-weight:500;color:var(--text);}
+.out-head .time{font-family:var(--mono);font-size:10px;color:var(--text3);}
+
+.price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;}
+.price-big{font-family:var(--mono);font-size:32px;font-weight:700;color:var(--text);letter-spacing:-0.03em;line-height:1;}
+.price-chg{font-family:var(--mono);font-size:12px;color:var(--green);display:flex;align-items:center;gap:3px;}
+.price-chg.red{color:var(--red);}
+.price-chg iconify-icon{font-size:12px;}
+.price-sub{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;}
+.price-sub-item{padding:10px 12px;border-radius:7px;background:var(--bg3);border:1px solid var(--border);}
+.price-sub-l{font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px;}
+.price-sub-v{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text);}
+
+.signal-row{
+  display:grid;grid-template-columns:48px 70px 1fr;gap:10px;align-items:center;
+  padding:8px 0;border-bottom:1px solid var(--border);
+}
+.signal-row:last-child{border-bottom:none;}
+.sig-tag{
+  width:44px;padding:4px 0;text-align:center;
+  font-family:var(--mono);font-size:10px;font-weight:700;border-radius:4px;letter-spacing:0.05em;
+}
+.sig-tag.buy{background:rgba(81,207,102,0.14);color:var(--green);}
+.sig-tag.sell{background:rgba(255,107,107,0.14);color:var(--red);}
+.sig-tag.hold{background:rgba(245,158,11,0.14);color:var(--amber);}
+.sig-name{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--text);}
+.sig-desc{font-size:11px;color:var(--text3);line-height:1.4;}
+
+.soci-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.soci-pct{font-family:var(--mono);font-size:28px;font-weight:700;letter-spacing:-0.03em;}
+.soci-label{display:flex;flex-direction:column;gap:2px;}
+.soci-sent{font-family:var(--mono);font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;display:inline-block;width:fit-content;}
+.soci-sent.bull{background:rgba(81,207,102,0.14);color:var(--green);}
+.soci-sent.bear{background:rgba(255,107,107,0.14);color:var(--red);}
+.soci-sent.neu{background:rgba(139,148,158,0.1);color:var(--text2);}
+.soci-meta{font-size:11px;color:var(--text3);font-family:var(--mono);}
+.soci-top{font-size:11px;color:var(--text2);line-height:1.6;padding:10px;background:var(--bg3);border-radius:6px;border:1px solid var(--border);margin-top:10px;}
+.soci-top strong{color:var(--acc);font-weight:600;}
+
+.rec-alert{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:12px 14px;border-radius:8px;
+  background:rgba(81,207,102,0.08);border:1px solid rgba(81,207,102,0.22);
+  margin-top:14px;
+}
+.rec-alert iconify-icon{font-size:18px;color:var(--green);flex-shrink:0;margin-top:1px;}
+.rec-alert-body{font-size:12px;color:var(--text2);line-height:1.6;}
+.rec-alert-body strong{color:var(--text);}
+
+.action-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+.abtn{
+  padding:9px 16px;border-radius:7px;
+  font-size:11px;font-weight:600;letter-spacing:0.04em;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:all 0.15s;
+}
+.abtn iconify-icon{font-size:13px;}
+.abtn.primary{background:var(--acc);color:#fff;}
+.abtn.primary:hover{box-shadow:var(--glow);transform:translateY(-1px);}
+.abtn.secondary{background:var(--bg3);color:var(--text2);border:1px solid var(--border2);}
+.abtn.secondary:hover{color:var(--text);border-color:var(--text3);}
+.abtn.danger{background:rgba(255,107,107,0.1);color:var(--red);border:1px solid rgba(255,107,107,0.3);}
+
+/* ORDER */
+.order-panel{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;margin-top:14px;}
+.order-tabs{display:flex;gap:6px;margin-bottom:18px;padding:4px;background:var(--bg3);border-radius:8px;}
+.order-tab{
+  flex:1;padding:9px 0;border-radius:6px;
+  font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--text3);transition:all 0.15s;font-family:var(--mono);
+}
+.order-tab.active{background:var(--acc);color:#fff;box-shadow:var(--glow);}
+.order-tab:not(.active):hover{color:var(--text2);}
+
+.form-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);}
+.form-row:last-of-type{border-bottom:none;}
+.form-label{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;}
+.form-label iconify-icon{color:var(--text3);font-size:13px;cursor:help;}
+.form-val{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text);}
+.form-val.acc{color:var(--acc);}
+.form-val.red{color:var(--red);}
+
+.slider-wrap{margin:14px 0;}
+.slider-top{display:flex;justify-content:space-between;margin-bottom:10px;}
+.slider-top .l{font-size:12px;color:var(--text2);}
+.slider-top .v{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--acc);}
+input[type=range]{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:var(--bg5);border-radius:2px;outline:none;}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:16px;height:16px;border-radius:50%;background:var(--acc);border:2px solid var(--bg2);
+  cursor:pointer;box-shadow:0 0 0 0 rgba(196,37,227,0.3);transition:box-shadow 0.2s;
+}
+input[type=range]::-webkit-slider-thumb:hover{box-shadow:0 0 0 6px rgba(196,37,227,0.2);}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--acc);border:2px solid var(--bg2);cursor:pointer;}
+.slider-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:6px;}
+
+/* CHECKS */
+.check-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-radius:6px;
+  background:var(--bg3);margin-bottom:6px;
+}
+.check-row .l{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
+.check-ico{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.check-ico.ok{background:rgba(81,207,102,0.18);color:var(--green);}
+.check-ico.warn{background:rgba(245,158,11,0.18);color:var(--amber);}
+.check-ico.err{background:rgba(255,107,107,0.18);color:var(--red);}
+.check-ico iconify-icon{font-size:13px;}
+.check-label{font-size:12px;color:var(--text2);}
+.check-badge{font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;letter-spacing:0.06em;}
+.check-badge.ok{background:rgba(81,207,102,0.15);color:var(--green);}
+.check-badge.warn{background:rgba(245,158,11,0.15);color:var(--amber);}
+
+.summary-table{
+  background:rgba(196,37,227,0.05);border:1px solid rgba(196,37,227,0.2);border-radius:8px;
+  padding:14px 16px;margin-top:8px;
+}
+.summary-table .st-title{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--acc);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;}
+.st-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(196,37,227,0.12);}
+.st-row:last-child{border-bottom:none;}
+.st-row .l{font-size:12px;color:var(--text2);}
+.st-row .v{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--text);}
+
+/* TOGGLE */
+.toggle{position:relative;width:36px;height:20px;background:var(--bg5);border-radius:999px;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
+.toggle::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--text3);transition:all 0.2s;}
+.toggle.on{background:var(--acc);}
+.toggle.on::after{background:#fff;left:18px;}
+.toggle-row{display:flex;align-items:flex-start;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);gap:16px;}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-info{flex:1;}
+.toggle-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.toggle-desc{font-size:11px;color:var(--text3);line-height:1.5;}
+
+/* STOP LOSS */
+.sl-head{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+.sl-stat{padding:12px 14px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);}
+.sl-stat .l{font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px;}
+.sl-stat .v{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--text);letter-spacing:-0.02em;}
+.sl-stat .v.acc{color:var(--acc);}
+
+.sl-switch{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.sl-opt{
+  padding:14px 16px;border-radius:8px;border:1px solid var(--border2);
+  background:var(--bg3);cursor:pointer;transition:all 0.15s;text-align:left;
+}
+.sl-opt:hover{border-color:var(--text3);}
+.sl-opt.active{border-color:var(--acc);background:var(--acc4);}
+.sl-opt-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.sl-opt.active .sl-opt-title{color:var(--acc);}
+.sl-opt-desc{font-size:11px;color:var(--text3);line-height:1.5;}
+
+.sim-row{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:7px;margin-bottom:6px;}
+.sim-row.amber{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.22);}
+.sim-row.red{background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.22);}
+.sim-row.green{background:rgba(81,207,102,0.08);border:1px solid rgba(81,207,102,0.22);}
+.sim-icn{flex-shrink:0;margin-top:1px;}
+.sim-icn iconify-icon{font-size:16px;}
+.sim-row.amber .sim-icn iconify-icon{color:var(--amber);}
+.sim-row.red .sim-icn iconify-icon{color:var(--red);}
+.sim-row.green .sim-icn iconify-icon{color:var(--green);}
+.sim-body{font-size:12px;color:var(--text2);line-height:1.6;}
+.sim-body strong{color:var(--text);}
+
+.trail-sim{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:14px;}
+.trail-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:12px;}
+.trail-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px;margin-bottom:14px;}
+.trail-step{padding:8px;border-radius:6px;border:1px solid var(--border2);text-align:center;cursor:pointer;transition:all 0.15s;font-size:11px;color:var(--text3);}
+.trail-step:hover{border-color:var(--text3);color:var(--text2);}
+.trail-step.active{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:600;}
+.trail-chart{height:180px;background:var(--bg2);border-radius:6px;padding:12px;position:relative;border:1px solid var(--border);}
+
+.cond-state{padding:14px 16px;border-radius:7px;background:rgba(196,37,227,0.05);border:1px solid rgba(196,37,227,0.2);margin-top:12px;}
+.cond-head{font-size:12px;font-weight:600;color:var(--acc);font-family:var(--mono);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;}
+.cond-body{font-size:12px;color:var(--text2);line-height:1.6;}
+.cond-body strong{color:var(--text);}
+.cond-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;}
+.cond-stat{padding:8px 10px;background:var(--bg2);border-radius:5px;border:1px solid var(--border);}
+.cond-stat .l{font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:3px;}
+.cond-stat .v{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);}
+.cond-stat .v.green{color:var(--green);}
+.cond-stat .v.acc{color:var(--acc);}
+
+.work-list{margin-top:12px;display:flex;flex-direction:column;gap:6px;}
+.work-row{display:flex;align-items:flex-start;gap:12px;padding:10px 12px;border-radius:6px;background:var(--bg3);font-size:12px;color:var(--text2);line-height:1.5;}
+.work-num{width:22px;height:22px;border-radius:50%;background:var(--bg5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--acc);}
+.work-row strong{color:var(--text);}
+
+/* AGENTS TAB - cards */
+.agent-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.agent-card{
+  padding:20px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);
+  display:flex;flex-direction:column;gap:12px;transition:all 0.15s;
+  position:relative;overflow:hidden;
+}
+.agent-card:hover{border-color:rgba(196,37,227,0.3);transform:translateY(-2px);}
+.agent-card-top{display:flex;align-items:center;gap:12px;}
+.agent-card-ico{
+  width:44px;height:44px;border-radius:10px;
+  background:linear-gradient(135deg,var(--acc3),rgba(196,37,227,0.02));
+  border:1px solid rgba(196,37,227,0.2);
+  display:flex;align-items:center;justify-content:center;color:var(--acc);
+}
+.agent-card-ico iconify-icon{font-size:22px;}
+.agent-card-name{font-size:14px;font-weight:600;}
+.agent-card-tag{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.06em;margin-top:2px;}
+.agent-card-desc{font-size:12px;color:var(--text3);line-height:1.6;}
+.agent-card-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding-top:10px;border-top:1px solid var(--border);}
+.acs-item{font-size:10px;color:var(--text3);font-family:var(--mono);}
+.acs-item .v{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);margin-top:2px;display:block;}
+.agent-card-actions{display:flex;gap:6px;margin-top:8px;}
+.acd-btn{
+  flex:1;padding:7px 10px;border-radius:6px;
+  font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;
+  border:1px solid var(--border2);color:var(--text2);transition:all 0.15s;font-family:var(--mono);
+}
+.acd-btn:hover{border-color:var(--acc);color:var(--acc);background:var(--acc4);}
+.acd-btn.primary{background:var(--acc);color:#fff;border-color:var(--acc);}
+.acd-btn.primary:hover{box-shadow:var(--glow);}
+
+/* SETTINGS */
+.setting-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;border-bottom:1px solid var(--border);gap:16px;
+}
+.setting-row:last-child{border-bottom:none;}
+.setting-info{flex:1;}
+.setting-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;}
+.setting-desc{font-size:11px;color:var(--text3);line-height:1.5;}
+.setting-ctrl{flex-shrink:0;display:flex;align-items:center;gap:8px;}
+.setting-input{
+  background:var(--bg3);border:1px solid var(--border2);border-radius:6px;
+  padding:8px 12px;font-size:12px;color:var(--text);outline:none;
+  font-family:var(--mono);min-width:200px;
+}
+.setting-input:focus{border-color:var(--acc);}
+.setting-select{
+  background:var(--bg3);border:1px solid var(--border2);border-radius:6px;
+  padding:8px 12px;font-size:12px;color:var(--text);outline:none;cursor:pointer;
+}
+.key-mask{
+  font-family:var(--mono);font-size:11px;color:var(--text3);
+  padding:4px 10px;background:var(--bg3);border-radius:4px;border:1px solid var(--border);
+}
+
+/* MODAL */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(7,6,13,0.8);
+  backdrop-filter:blur(8px);z-index:100;
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.modal-bg.show{display:flex;animation:fadeIn 0.2s ease-out;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.modal{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:14px;
+  max-width:420px;width:100%;overflow:hidden;
+  animation:slideIn 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px) scale(0.95);}to{opacity:1;transform:translateY(0) scale(1);}}
+.modal-hd{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-hd h3{font-size:15px;font-weight:600;}
+.modal-close{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:all 0.15s;}
+.modal-close:hover{color:var(--text);background:var(--bg3);}
+.modal-body{padding:24px;}
+.modal-tabs{display:flex;gap:4px;padding:4px;background:var(--bg3);border-radius:8px;margin-bottom:20px;}
+.mt-tab{
+  flex:1;padding:10px;border-radius:6px;
+  font-size:11px;font-weight:600;letter-spacing:0.06em;
+  color:var(--text3);transition:all 0.15s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.mt-tab.active{background:var(--acc);color:#fff;}
+.mt-pane{display:none;}
+.mt-pane.active{display:block;}
+
+.login-input{
+  width:100%;background:var(--bg3);border:1px solid var(--border2);
+  border-radius:7px;padding:11px 14px;font-size:13px;color:var(--text);
+  outline:none;transition:border-color 0.15s;
+}
+.login-input:focus{border-color:var(--acc);}
+.login-input::placeholder{color:var(--text3);}
+.login-btn{width:100%;padding:12px;background:var(--acc);color:#fff;border-radius:7px;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-top:12px;transition:all 0.15s;}
+.login-btn:hover{box-shadow:var(--glow);}
+.phantom-btn{
+  width:100%;padding:14px;background:#ab9ff2;color:#000;
+  border-radius:7px;font-size:12px;font-weight:700;letter-spacing:0.06em;
+  text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.15s;
+}
+.phantom-btn:hover{box-shadow:0 0 24px rgba(171,159,242,0.4);}
+.phantom-btn.connected{background:var(--acc);color:#fff;}
+.phantom-glyph{width:22px;height:22px;border-radius:5px;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;color:#ab9ff2;}
+.login-msg{font-size:11px;color:var(--text3);text-align:center;margin-top:14px;line-height:1.6;}
+.login-msg.ok{color:var(--green);}
+.login-msg.err{color:var(--red);}
+
+/* TOASTS */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:200;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:8px;
+  padding:12px 16px;min-width:260px;max-width:360px;
+  display:flex;align-items:center;gap:10px;
+  animation:toastIn 0.3s cubic-bezier(0.16,1,0.3,1);
+  pointer-events:auto;box-shadow:0 10px 40px rgba(0,0,0,0.5);
+}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+.toast.success{border-color:rgba(81,207,102,0.3);background:linear-gradient(135deg,rgba(81,207,102,0.08),var(--bg2));}
+.toast.error{border-color:rgba(255,107,107,0.3);background:linear-gradient(135deg,rgba(255,107,107,0.08),var(--bg2));}
+.toast.info{border-color:rgba(196,37,227,0.3);background:linear-gradient(135deg,rgba(196,37,227,0.08),var(--bg2));}
+.toast-ico iconify-icon{font-size:18px;}
+.toast.success .toast-ico iconify-icon{color:var(--green);}
+.toast.error .toast-ico iconify-icon{color:var(--red);}
+.toast.info .toast-ico iconify-icon{color:var(--acc);}
+.toast-msg{flex:1;font-size:12px;color:var(--text);line-height:1.5;}
+.toast-close{color:var(--text3);cursor:pointer;font-size:14px;padding:2px;}
+.toast-close:hover{color:var(--text);}
+
+.fx-in{animation:fxIn 0.5s cubic-bezier(0.16,1,0.3,1) both;}
+@keyframes fxIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* Empty state in tabs */
+.empty-msg{
+  padding:40px 24px;text-align:center;
+  background:var(--bg2);border:1px dashed var(--border2);border-radius:12px;
+}
+.empty-msg iconify-icon{font-size:36px;color:var(--text3);margin-bottom:12px;}
+.empty-msg h4{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:6px;}
+.empty-msg p{font-size:12px;color:var(--text3);line-height:1.6;max-width:420px;margin:0 auto;}
+.empty-msg button{margin-top:16px;}
+
+@media(max-width:768px){
+  .topbar{padding:0 14px;height:52px;}
+  .tabs-nav{top:52px;}
+  .tabs-inner{padding:0 14px;}
+  .tab-btn{padding:12px 14px;font-size:12px;}
+  .page{padding:20px 14px 60px;}
+  .overview{grid-template-columns:1fr 1fr;}
+  .overview .metric-big:nth-child(3){grid-column:span 2;}
+}
+
+/* AGENT CONSOLE TERMINAL */
+.terminal{margin-top:14px;border:1px solid var(--border2);border-radius:12px;background:#09060f;overflow:hidden;font-family:var(--mono);box-shadow:0 20px 60px -20px rgba(0,0,0,0.7),0 0 0 1px rgba(168,85,247,0.06);}
+.term-bar{display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--bg3);border-bottom:1px solid var(--border);}
+.term-dot{width:11px;height:11px;border-radius:50%;}
+.term-dot.r{background:#ff6b6b;}.term-dot.y{background:#f59e0b;}.term-dot.g{background:#51cf66;}
+.term-title{margin-left:8px;font-size:11px;color:var(--text3);letter-spacing:0.06em;}
+.term-status{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:0.08em;color:var(--acc);}
+.term-body{padding:16px;height:360px;overflow-y:auto;font-size:12.5px;line-height:1.7;}
+.term-line{white-space:pre-wrap;word-break:break-word;margin-bottom:9px;}
+.term-line .who{font-weight:700;margin-right:7px;}
+.term-line.sys{color:var(--text3);}
+.term-line.user{color:var(--text);}
+.term-line.user .who{color:var(--acc);}
+.term-line.agent{color:var(--text2);}
+.term-line.agent .who{color:var(--green);}
+.term-line.route{color:var(--text3);font-size:11px;letter-spacing:0.04em;}
+.term-line.err{color:var(--red);}
+.term-cursor{display:inline-block;width:7px;height:13px;background:var(--acc);vertical-align:middle;animation:blink 1s steps(1) infinite;}
+.term-input{display:flex;align-items:center;gap:8px;padding:12px 14px;border-top:1px solid var(--border);background:var(--bg2);}
+.term-input:focus-within{border-color:rgba(168,85,247,0.3);}
+.term-prompt{color:var(--acc);font-weight:700;font-size:15px;}
+.term-input input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:13px;}
+.term-input input::placeholder{color:var(--text3);}
+.term-send{padding:8px 16px;background:var(--acc);color:#fff;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:0.06em;transition:all 0.15s;}
+.term-send:hover:not(:disabled){box-shadow:var(--glow);}
+.term-send:disabled{opacity:0.45;cursor:not-allowed;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a href="index.html" class="brand">
+    <img src="assets/logo.png" alt="PURPLEHAZEL"/>
+    <div class="brand-txt">
+      <span class="n">PURPLEHAZEL</span>
+      <span class="s">Console</span>
+    </div>
+  </a>
+  <div class="topbar-r">
+    <div class="pill-status"><span class="s-dot"></span>MESH ONLINE</div>
+    <button class="t-btn" id="loginBtn"><iconify-icon icon="solar:user-linear"></iconify-icon><span id="loginLabel">Login</span></button>
+    <a href="index.html" class="t-btn"><iconify-icon icon="solar:arrow-left-linear"></iconify-icon>Back</a>
+  </div>
+</header>
+
+<!-- TABS NAV -->
+<nav class="tabs-nav">
+  <div class="tabs-inner">
+    <button class="tab-btn active" data-tab="overview">
+      <iconify-icon icon="solar:home-smile-linear"></iconify-icon>Overview
+    </button>
+    <button class="tab-btn" data-tab="agents">
+      <iconify-icon icon="solar:widget-linear"></iconify-icon>Agents
+      <span class="count">7</span>
+    </button>
+    <button class="tab-btn" data-tab="trading">
+      <iconify-icon icon="solar:chart-square-linear"></iconify-icon>Trading
+    </button>
+    <button class="tab-btn" data-tab="settings">
+      <iconify-icon icon="solar:settings-linear"></iconify-icon>Settings
+    </button>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<main class="page">
+
+  <!-- ============= OVERVIEW TAB ============= -->
+  <div class="tab-pane active" data-pane="overview">
+
+    <div class="intro-panel fx-in">
+      <p>Welcome to <strong>PURPLEHAZEL</strong> — a <strong>Multi-Agent AI system</strong>. Agent capabilities:
+      <span class="a">Orchestrator</span> coordinates · <span class="a">Market Scanner</span> scans markets · <span class="a">Code Runner</span> executes code · <span class="a">Signal Hunter</span> finds trading signals · <span class="a">Social Monitor</span> monitors X/Twitter · <span class="a">Research Agent</span> deep research · <span class="a">Action Executor</span> executes real actions.</p>
+    </div>
+
+    <div class="section-title">Overview<div class="dash"></div><span id="overviewTime">—</span></div>
+    <div class="overview">
+      <div class="metric-big">
+        <div class="mtop">
+          <span class="mlabel">Active agents</span>
+          <span class="micn"><iconify-icon icon="solar:widget-linear"></iconify-icon></span>
+        </div>
+        <div>
+          <div class="mval">7<span class="slash">/</span>7</div>
+          <div class="ministat" style="margin-top:8px;"><span class="sd"></span>All online</div>
+        </div>
+      </div>
+      <div class="metric-big">
+        <div class="mtop">
+          <span class="mlabel">Today's Tasks</span>
+          <span class="micn"><iconify-icon icon="solar:graph-new-linear"></iconify-icon></span>
+        </div>
+        <div>
+          <div class="mval" id="taskCount">142</div>
+          <div class="mdelta"><span class="up">+23 from yesterday</span></div>
+        </div>
+      </div>
+      <div class="metric-big">
+        <div class="mtop">
+          <span class="mlabel">Action executed</span>
+          <span class="micn"><iconify-icon icon="solar:bolt-circle-linear"></iconify-icon></span>
+        </div>
+        <div>
+          <div class="mval" id="actionCount">38</div>
+          <div class="mdelta"><span>via Action Executor</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-hd"><h3><iconify-icon icon="solar:database-linear"></iconify-icon>Data Source</h3><span class="hd-sub">Agent input</span></div>
+        <div class="panel-body" id="dsList"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-hd"><h3><iconify-icon icon="solar:widget-linear"></iconify-icon>Agent Mesh</h3><span class="hd-sub">Status live</span></div>
+        <div class="panel-body" id="agListMini"></div>
+      </div>
+    </div>
+
+    <div class="section-title">Quick commands<div class="dash"></div><span>Type or select preset</span></div>
+    <div class="chat-main">
+      <div class="chat-box">
+        <textarea id="chatInput" rows="1" placeholder='Try: "scan market BTC" or "find alpha in SOL"'></textarea>
+        <button class="chat-send" id="chatSend">Send<iconify-icon icon="solar:plain-linear"></iconify-icon></button>
+      </div>
+      <div class="quick-chips">
+        <button class="q-chip" data-q="scan market BTC now">Scan BTC</button>
+        <button class="q-chip" data-q="analyze SOL technicals">Analyze SOL</button>
+        <button class="q-chip" data-q="twitter sentiment today">Sentiment X</button>
+        <button class="q-chip" data-q="research trending tokens">Research trending</button>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:20px;">
+      <div class="panel-hd">
+        <h3><iconify-icon icon="solar:clock-circle-linear"></iconify-icon>Activity Log</h3>
+        <span class="hd-sub">Live</span>
+      </div>
+      <div class="panel-body" id="logList"></div>
+    </div>
+  </div>
+
+  <!-- ============= AGENTS TAB ============= -->
+  <div class="tab-pane" data-pane="agents">
+    <div class="section-title">The SEVEN Agents<div class="dash"></div><span>7 active</span></div>
+    <div class="agent-cards" id="agentCards"></div>
+
+    <div class="section-title">Agent Console<div class="dash"></div><span>describe a problem — the right agent answers</span></div>
+    <div class="terminal" id="terminal">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">purplehazel://agent-console</span>
+        <span class="term-status"><span class="s-dot"></span>ONLINE</span>
+      </div>
+      <div class="term-body" id="termBody">
+        <div class="term-line sys">PURPLEHAZEL agent console v1.0</div>
+        <div class="term-line sys">Type your problem and it is routed to the agent whose job it is to answer.</div>
+        <div class="term-line sys">e.g. "scan the BTC market", "find an entry signal for SOL", "what's the X sentiment today"</div>
+      </div>
+      <div class="term-input">
+        <span class="term-prompt">›</span>
+        <input id="termInput" type="text" autocomplete="off" spellcheck="false" placeholder="describe your problem…" />
+        <button id="termSend" class="term-send">RUN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= TRADING TAB ============= -->
+  <div class="tab-pane" data-pane="trading">
+
+    <!-- Empty state if no analysis yet -->
+    <div id="tradingEmpty" class="empty-msg">
+      <iconify-icon icon="solar:chart-square-linear"></iconify-icon>
+      <h4>No active analysis</h4>
+      <p>Start from the <strong>Overview</strong> tab, type a command like "scan market BTC" to see the full agent workflow and output here.</p>
+      <button class="abtn primary" onclick="gotoTab('overview')" style="margin-top:16px;">
+        <iconify-icon icon="solar:arrow-left-linear"></iconify-icon>Back to Overview
+      </button>
+    </div>
+
+    <div id="tradingContent" style="display:none;">
+
+      <div class="section-title">Behind the scenes<div class="dash"></div><span>Working agents</span></div>
+      <div class="flow" id="flowList"></div>
+
+      <div class="section-title">Market Analysis<div class="dash"></div><span id="outTimeSection">—</span></div>
+
+      <div class="out-card">
+        <div class="out-head">
+          <div class="out-head-l">
+            <span class="tag">SCAN-01</span><span class="sep">·</span>
+            <span class="lbl">Market Scanner</span><span class="sep">·</span>
+            <span class="lbl">BTC/USDT</span>
+          </div>
+          <span class="time" id="outTime">—</span>
+        </div>
+        <div class="price-row">
+          <span class="price-big" id="outPrice">$84,200</span>
+          <span class="price-chg" id="outChange"><iconify-icon icon="solar:arrow-up-linear"></iconify-icon>+2.3%</span>
+        </div>
+        <div class="price-sub">
+          <div class="price-sub-item"><div class="price-sub-l">Volume 24h</div><div class="price-sub-v" id="outVol">$38.4B</div></div>
+          <div class="price-sub-item"><div class="price-sub-l">High 24h</div><div class="price-sub-v" id="outHigh">$85,100</div></div>
+          <div class="price-sub-item"><div class="price-sub-l">Low 24h</div><div class="price-sub-v" id="outLow">$82,300</div></div>
+        </div>
+      </div>
+
+      <div class="out-card">
+        <div class="out-head">
+          <div class="out-head-l">
+            <span class="tag">HUNT-03</span><span class="sep">·</span>
+            <span class="lbl">Signal Hunter</span><span class="sep">·</span>
+            <span class="lbl">Technical analysis</span>
+          </div>
+        </div>
+        <div class="signal-row">
+          <div><span class="sig-tag buy">BUY</span></div>
+          <div class="sig-name">RSI 14</div>
+          <div class="sig-desc">Value <strong style="color:var(--text);">42</strong> — not overbought, room to rise</div>
+        </div>
+        <div class="signal-row">
+          <div><span class="sig-tag buy">BUY</span></div>
+          <div class="sig-name">MACD</div>
+          <div class="sig-desc">Golden cross 2 hours ago — positive momentum</div>
+        </div>
+        <div class="signal-row">
+          <div><span class="sig-tag hold">HOLD</span></div>
+          <div class="sig-name">MA 200</div>
+          <div class="sig-desc">Price above MA200 — long-term trend still bullish</div>
+        </div>
+      </div>
+
+      <div class="out-card">
+        <div class="out-head">
+          <div class="out-head-l">
+            <span class="tag">SOCI-04</span><span class="sep">·</span>
+            <span class="lbl">Social Monitor</span><span class="sep">·</span>
+            <span class="lbl">Market sentiment</span>
+          </div>
+        </div>
+        <div class="soci-head">
+          <span class="soci-pct" style="color:var(--green);">73%</span>
+          <div class="soci-label">
+            <span class="soci-sent bull">Bullish</span>
+            <span class="soci-meta">from 4,200 tweets in the last hour</span>
+          </div>
+        </div>
+        <div class="soci-top"><strong>Trending topics:</strong> ETF approval, halving, institutional buying</div>
+      </div>
+
+      <div class="rec-alert">
+        <iconify-icon icon="solar:check-circle-bold"></iconify-icon>
+        <div class="rec-alert-body">
+          <strong>System recommendation:</strong> 2 of 3 signals indicate BUY. Social sentiment 73% bullish. Consider entry in the <strong>$83,800–$84,200</strong> range.
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="abtn primary" onclick="openOrderPanel()"><iconify-icon icon="solar:cart-linear"></iconify-icon>Execute buy</button>
+        <button class="abtn secondary" onclick="toast('info','Technical signals: RSI 42 + MACD cross + MA200 below price = 2 bullish, 1 neutral.')"><iconify-icon icon="solar:info-circle-linear"></iconify-icon>Explain signals</button>
+        <button class="abtn secondary" onclick="openStopLoss()"><iconify-icon icon="solar:shield-linear"></iconify-icon>Set alert</button>
+      </div>
+
+      <!-- ORDER PANEL -->
+      <div id="orderSection" style="display:none;">
+        <div class="section-title">Order BTC<div class="dash"></div><span>Step 1 — Fill order</span></div>
+        <div class="order-panel">
+          <div class="order-tabs">
+            <button class="order-tab active" data-order="market">Market</button>
+            <button class="order-tab" data-order="limit">Limit</button>
+            <button class="order-tab" data-order="stoploss">Stop Loss</button>
+          </div>
+          <div class="slider-wrap">
+            <div class="slider-top"><span class="l">Buy amount (USDT)</span><span class="v" id="orderAmt">$500</span></div>
+            <input type="range" min="100" max="15000" step="100" value="500" id="orderSlider">
+            <div class="slider-labels"><span>$100</span><span>$15,000</span></div>
+          </div>
+          <div class="form-row"><span class="form-label">Current BTC price</span><span class="form-val" id="orderPrice">$84,200</span></div>
+          <div class="form-row"><span class="form-label">BTC you receive</span><span class="form-val acc" id="orderBtc">0.00594 BTC</span></div>
+          <div class="form-row"><span class="form-label">Estimated fee (0.1%)</span><span class="form-val red" id="orderFee">-$0.50</span></div>
+          <div class="action-row" style="margin-top:18px;">
+            <button class="abtn primary" onclick="runSafetyCheck()"><iconify-icon icon="solar:shield-check-linear"></iconify-icon>Review order</button>
+            <button class="abtn secondary" onclick="toast('info','Market = instant at market price. Limit = set your own price. Stop Loss = triggers on price drop.')"><iconify-icon icon="solar:info-circle-linear"></iconify-icon>Explain order types</button>
+          </div>
+        </div>
+
+        <div id="safetyCheck" style="display:none;">
+          <div class="section-title">Step 2 — Safety check<div class="dash"></div></div>
+          <div class="panel"><div class="panel-body">
+            <div class="check-row"><div class="l"><span class="check-ico ok"><iconify-icon icon="solar:check-linear"></iconify-icon></span><span class="check-label">USDT balance sufficient</span></div><span class="check-badge ok">OK</span></div>
+            <div class="check-row"><div class="l"><span class="check-ico ok"><iconify-icon icon="solar:check-linear"></iconify-icon></span><span class="check-label">Technical signals support (2/3 BUY)</span></div><span class="check-badge ok">OK</span></div>
+            <div class="check-row"><div class="l"><span class="check-ico ok"><iconify-icon icon="solar:check-linear"></iconify-icon></span><span class="check-label">No negative news in the last hour</span></div><span class="check-badge ok">OK</span></div>
+            <div class="check-row"><div class="l"><span class="check-ico warn"><iconify-icon icon="solar:danger-triangle-linear"></iconify-icon></span><span class="check-label">High volatility — spread slightly wide</span></div><span class="check-badge warn">Caution</span></div>
+          </div></div>
+
+          <div class="section-title">Step 3 — Confirm<div class="dash"></div></div>
+          <div class="summary-table">
+            <div class="st-title">Order Summary</div>
+            <div class="st-row"><span class="l">Asset</span><span class="v">BTC/USDT</span></div>
+            <div class="st-row"><span class="l">Type order</span><span class="v" id="sumType">Market</span></div>
+            <div class="st-row"><span class="l">Total payment</span><span class="v" id="sumTotal">$500</span></div>
+            <div class="st-row"><span class="l">BTC received</span><span class="v" id="sumBtc">0.00594 BTC</span></div>
+            <div class="st-row"><span class="l">Execution price</span><span class="v">~$84,200</span></div>
+            <div class="st-row"><span class="l">Exchange</span><span class="v">Binance (demo)</span></div>
+          </div>
+          <div class="action-row" style="margin-top:14px;">
+            <button class="abtn primary" onclick="executeOrder()"><iconify-icon icon="solar:check-square-linear"></iconify-icon>Confirm &amp; execute</button>
+            <button class="abtn danger" onclick="cancelOrder()"><iconify-icon icon="solar:close-circle-linear"></iconify-icon>Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STOP LOSS -->
+      <div id="stopLossSection" style="display:none;">
+        <div class="section-title">Your BTC position<div class="dash"></div></div>
+        <div class="sl-head">
+          <div class="sl-stat"><div class="l">Buy price</div><div class="v">$84,186</div></div>
+          <div class="sl-stat"><div class="l">BTC held</div><div class="v">0.00594</div></div>
+          <div class="sl-stat"><div class="l">Current value</div><div class="v acc" id="slNow">$500.06</div></div>
+        </div>
+
+        <div class="section-title">Type Stop Loss<div class="dash"></div></div>
+        <div class="sl-switch">
+          <button class="sl-opt active" data-sl="fixed">
+            <div class="sl-opt-title">Fixed Stop Loss</div>
+            <div class="sl-opt-desc">Stop price set manually. Simple and certain.</div>
+          </button>
+          <button class="sl-opt" data-sl="trailing">
+            <div class="sl-opt-title">Trailing Stop Loss</div>
+            <div class="sl-opt-desc">Stop follows price up automatically.</div>
+          </button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd"><h3><iconify-icon icon="solar:shield-linear"></iconify-icon>Set stop loss level</h3></div>
+          <div class="panel-body">
+            <div class="slider-wrap">
+              <div class="slider-top"><span class="l">Maximum loss tolerance</span><span class="v" id="slPct">5%</span></div>
+              <input type="range" min="1" max="20" value="5" id="slSlider">
+              <div class="slider-labels"><span>1% (tight)</span><span>20% (loose)</span></div>
+            </div>
+            <div class="form-row"><span class="form-label">Buy price</span><span class="form-val">$84,186</span></div>
+            <div class="form-row"><span class="form-label">Stop loss price</span><span class="form-val red" id="slPrice">$79,977</span></div>
+            <div class="form-row"><span class="form-label">Max loss</span><span class="form-val red" id="slLoss">-$25.00</span></div>
+            <div class="form-row"><span class="form-label">If triggered, remaining</span><span class="form-val" id="slRemain">$475.00</span></div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:14px;">
+          <div class="panel-hd"><h3><iconify-icon icon="solar:bell-linear"></iconify-icon>Agent Notifications</h3></div>
+          <div class="panel-body">
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="toggle-title">Dashboard notifications</div><div class="toggle-desc">Appears on this screen</div></div>
+              <div class="toggle on" data-t="dash"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="toggle-title">Telegram / WhatsApp Alerts</div><div class="toggle-desc">Send alerts to phone</div></div>
+              <div class="toggle on" data-t="wa"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="toggle-title">Auto-execute sell</div><div class="toggle-desc">Agent sells without confirmation</div></div>
+              <div class="toggle" data-t="auto"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="toggle-title">Alert near stop loss (90%)</div><div class="toggle-desc">Early warning before trigger</div></div>
+              <div class="toggle on" data-t="warn"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">Simulation — if stop loss triggers<div class="dash"></div></div>
+        <div class="sim-row amber">
+          <span class="sim-icn"><iconify-icon icon="solar:danger-triangle-linear"></iconify-icon></span>
+          <div class="sim-body"><strong>Signal Hunter:</strong> BTC price approaching stop loss — <strong>$80,100</strong>. Distance remaining <strong>$123</strong>.</div>
+        </div>
+        <div class="sim-row red">
+          <span class="sim-icn"><iconify-icon icon="solar:close-circle-linear"></iconify-icon></span>
+          <div class="sim-body"><strong>Action Executor:</strong> Stop loss triggered at <strong id="simSlPrice">$79,977</strong>. Ready to sell 0.00594 BTC.</div>
+        </div>
+        <div class="sim-row green">
+          <span class="sim-icn"><iconify-icon icon="solar:check-circle-linear"></iconify-icon></span>
+          <div class="sim-body"><strong>Action Executor:</strong> Sell successful. <strong id="simSaved">$25.00</strong> protected. Balance returned to USDT.</div>
+        </div>
+
+        <div class="section-title">Agents on guard 24/7<div class="dash"></div></div>
+        <div class="work-list">
+          <div class="work-row"><span class="work-num">1</span><span><strong>Market Scanner</strong> monitoring BTC price every second.</span></div>
+          <div class="work-row"><span class="work-num">2</span><span><strong>Signal Hunter</strong> detects approaching stop level.</span></div>
+          <div class="work-row"><span class="work-num">3</span><span><strong>Orchestrator</strong> instructing Action Executor to stand by.</span></div>
+          <div class="work-row"><span class="work-num">4</span><span><strong>Action Executor</strong> auto-executes sell orders — even while you sleep.</span></div>
+        </div>
+
+        <div class="action-row" style="margin-top:18px;">
+          <button class="abtn primary" onclick="activateStopLoss()"><iconify-icon icon="solar:shield-check-linear"></iconify-icon>Activate stop loss</button>
+          <button class="abtn secondary" onclick="openTrailing()"><iconify-icon icon="solar:graph-up-linear"></iconify-icon>Explain trailing stop</button>
+          <button class="abtn secondary" onclick="toast('info','Ideal 3-7%. Scalping: 2-3%. Long-term: 7-10%. You are at 5% — safe.')"><iconify-icon icon="solar:info-circle-linear"></iconify-icon>What % is ideal?</button>
+        </div>
+      </div>
+
+      <!-- TRAILING -->
+      <div id="trailingSection" style="display:none;">
+        <div class="section-title">Fixed vs Trailing<div class="dash"></div></div>
+        <div class="grid-2">
+          <div class="panel" style="padding:16px 18px;">
+            <div style="font-size:13px;font-weight:600;color:var(--red);margin-bottom:8px;">Fixed Stop Loss</div>
+            <p style="font-size:12px;color:var(--text2);line-height:1.6;">Stop price STAYS fixed. Even if BTC rises to $90k, stop loss stays at $79,977. Profits are not protected.</p>
+          </div>
+          <div class="panel" style="padding:16px 18px;border-color:rgba(196,37,227,0.3);">
+            <div style="font-size:13px;font-weight:600;color:var(--acc);margin-bottom:8px;">Trailing Stop Loss</div>
+            <p style="font-size:12px;color:var(--text2);line-height:1.6;">Stop automatically FOLLOWS UP when BTC rises. But if BTC drops, stop STAYS at the highest position.</p>
+          </div>
+        </div>
+
+        <div class="section-title">Simulation step-by-step<div class="dash"></div><span>trailing 5%</span></div>
+        <div class="trail-sim">
+          <div class="trail-title">Entry — trailing stop activated</div>
+          <div class="trail-steps">
+            <button class="trail-step active" data-ts="0">Initial buy</button>
+            <button class="trail-step" data-ts="1">BTC rises</button>
+            <button class="trail-step" data-ts="2">Rises again</button>
+            <button class="trail-step" data-ts="3">BTC drops</button>
+            <button class="trail-step" data-ts="4">Stop hit!</button>
+          </div>
+          <div class="trail-chart">
+            <canvas id="trailCanvas" style="width:100%;height:100%;"></canvas>
+          </div>
+          <div class="cond-state">
+            <div class="cond-head" id="trailStageTitle">Initial entry</div>
+            <div class="cond-body" id="trailDesc">Bought BTC at $84,186 — trailing stop 5% active at <strong>$79,977</strong>. Stop moves 5% from entry price. Agent monitoring price every second.</div>
+            <div class="cond-stats">
+              <div class="cond-stat"><div class="l">BTC Price</div><div class="v" id="trailPrice">$84,186</div></div>
+              <div class="cond-stat"><div class="l">Trailing stop</div><div class="v acc" id="trailStop">$79,977</div></div>
+              <div class="cond-stat"><div class="l">Profit / loss</div><div class="v" id="trailPnl">$0.00</div></div>
+            </div>
+          </div>
+          <div class="action-row" style="margin-top:14px;">
+            <button class="abtn primary" onclick="activateTrailing()"><iconify-icon icon="solar:shield-check-linear"></iconify-icon>Activate trailing stop</button>
+            <button class="abtn secondary" onclick="toast('info','5% works for swing. 2-3% for scalping. 7-10% for long-term.')"><iconify-icon icon="solar:info-circle-linear"></iconify-icon>What % is ideal?</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============= SETTINGS TAB ============= -->
+  <div class="tab-pane" data-pane="settings">
+
+    <div class="section-title">Account<div class="dash"></div></div>
+    <div class="panel"><div class="panel-body">
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Status login</div>
+          <div class="setting-desc" id="accStatusDesc">Not logged in — click the login button above to sign up / connect wallet.</div>
+        </div>
+        <div class="setting-ctrl">
+          <span class="ds-status off" id="accStatus"><span class="d"></span>Guest</span>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">$PHZL Holder Status</div>
+          <div class="setting-desc">Hold minimum 1,000 $PHZL to unlock unlimited free tier access.</div>
+        </div>
+        <div class="setting-ctrl">
+          <span class="ds-status warn"><span class="d"></span>Not verified</span>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="section-title">Data Sources<div class="dash"></div><span>Agent input configuration</span></div>
+    <div class="panel"><div class="panel-body" id="settingsDsList"></div></div>
+
+    <div class="section-title">Notifications<div class="dash"></div></div>
+    <div class="panel"><div class="panel-body">
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-title">Dashboard notifications</div>
+          <div class="toggle-desc">Toast appears in bottom right corner</div>
+        </div>
+        <div class="toggle on" data-set="notif_dash"></div>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-title">Email alerts</div>
+          <div class="toggle-desc">Send email alerts for important signals</div>
+        </div>
+        <div class="toggle" data-set="notif_email"></div>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-title">Telegram / WhatsApp</div>
+          <div class="toggle-desc">Bot integration — requires token setup (admin)</div>
+        </div>
+        <div class="toggle" data-set="notif_tg"></div>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-title">Agent auto-execute</div>
+          <div class="toggle-desc">Allow agent to execute actions without confirmation (use with caution)</div>
+        </div>
+        <div class="toggle" data-set="auto_exec"></div>
+      </div>
+    </div></div>
+
+    <div class="section-title">API Keys<div class="dash"></div><span>Server-side — stored in config.php</span></div>
+    <div class="panel"><div class="panel-body">
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Claude API Key</div>
+          <div class="setting-desc">For agent reasoning. Set in config.php on server.</div>
+        </div>
+        <div class="setting-ctrl">
+          <span class="key-mask">sk-ant-••••••••••</span>
+          <span class="ds-status ok"><span class="d"></span>Configured</span>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">CoinGecko API</div>
+          <div class="setting-desc">Free tier — no key needed, rate limit 30 req/min.</div>
+        </div>
+        <div class="setting-ctrl">
+          <span class="ds-status ok"><span class="d"></span>Active</span>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">DexScreener</div>
+          <div class="setting-desc">Free — Solana token pair data.</div>
+        </div>
+        <div class="setting-ctrl">
+          <span class="ds-status ok"><span class="d"></span>Active</span>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Solana RPC</div>
+          <div class="setting-desc">For on-chain $PHZL holder verification.</div>
+        </div>
+        <div class="setting-ctrl">
+          <select class="setting-select" id="rpcSelect">
+            <option value="mainnet">api.mainnet-beta.solana.com</option>
+            <option value="helius">helius.xyz (faster, key needed)</option>
+            <option value="quicknode">QuickNode endpoint</option>
+          </select>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="section-title">Appearance<div class="dash"></div></div>
+    <div class="panel"><div class="panel-body">
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Theme</div>
+          <div class="setting-desc">Light mode not available yet — stay in the haze 🟣</div>
+        </div>
+        <div class="setting-ctrl">
+          <select class="setting-select" disabled><option>Dark (default)</option></select>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Accent color</div>
+          <div class="setting-desc">Primary accent color</div>
+        </div>
+        <div class="setting-ctrl">
+          <select class="setting-select" disabled><option>Purple #c425e3</option></select>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Language</div>
+          <div class="setting-desc">Interface language</div>
+        </div>
+        <div class="setting-ctrl">
+          <select class="setting-select" id="langSelect">
+            <option value="id">Indonesia</option>
+            <option value="en" selected>English</option>
+          </select>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="section-title">Danger Zone<div class="dash"></div></div>
+    <div class="panel" style="border-color:rgba(255,107,107,0.2);"><div class="panel-body">
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title" style="color:var(--red);">Reset all settings</div>
+          <div class="setting-desc">Restore everything to default — cannot be undone.</div>
+        </div>
+        <div class="setting-ctrl">
+          <button class="abtn danger" onclick="if(confirm('Reset all settings?')){toast('success','Settings reset to default.');}"><iconify-icon icon="solar:refresh-linear"></iconify-icon>Reset</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title" style="color:var(--red);">Clear activity log</div>
+          <div class="setting-desc">Delete all log history — permanent.</div>
+        </div>
+        <div class="setting-ctrl">
+          <button class="abtn danger" onclick="if(confirm('Clear activity log?')){logs.length=0;renderLogs();toast('success','Activity log cleared.');}"><iconify-icon icon="solar:trash-bin-minimalistic-linear"></iconify-icon>Clear log</button>
+        </div>
+      </div>
+    </div></div>
+
+  </div>
+
+</main>
+
+<!-- LOGIN MODAL -->
+<div class="modal-bg" id="loginModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <h3>Login to PURPLEHAZEL</h3>
+      <button class="modal-close" onclick="closeLogin()"><iconify-icon icon="solar:close-linear"></iconify-icon></button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-tabs">
+        <button class="mt-tab active" data-mt="email"><iconify-icon icon="solar:letter-linear"></iconify-icon>Email OTP</button>
+        <button class="mt-tab" data-mt="phantom"><iconify-icon icon="solar:wallet-linear"></iconify-icon>Phantom</button>
+      </div>
+      <div class="mt-pane active" data-pane="email">
+        <div id="dashOtpStep1">
+          <input type="email" class="login-input" id="loginEmail" placeholder="you@gmail.com">
+          <button class="login-btn" onclick="dashSendOTP()">Send verification code</button>
+        </div>
+        <div id="dashOtpStep2" style="display:none;">
+          <p style="font-size:12px;color:var(--text3);margin-bottom:12px;text-align:center;line-height:1.5;">Code sent to <strong id="dashOtpEmailShow" style="color:var(--acc);"></strong></p>
+          <div style="display:flex;gap:6px;justify-content:center;margin-bottom:12px;">
+            <input type="text" maxlength="1" class="dash-otp" style="width:42px;height:50px;text-align:center;font-size:20px;font-weight:700;font-family:var(--mono);background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--acc);outline:none;" oninput="dashOtpNext(this)" onkeydown="dashOtpBack(event,this)">
+            <input type="text" maxlength="1" class="dash-otp" style="width:42px;height:50px;text-align:center;font-size:20px;font-weight:700;font-family:var(--mono);background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--acc);outline:none;" oninput="dashOtpNext(this)" onkeydown="dashOtpBack(event,this)">
+            <input type="text" maxlength="1" class="dash-otp" style="width:42px;height:50px;text-align:center;font-size:20px;font-weight:700;font-family:var(--mono);background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--acc);outline:none;" oninput="dashOtpNext(this)" onkeydown="dashOtpBack(event,this)">
+            <input type="text" maxlength="1" class="dash-otp" style="width:42px;height:50px;text-align:center;font-size:20px;font-weight:700;font-family:var(--mono);background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--acc);outline:none;" oninput="dashOtpNext(this)" onkeydown="dashOtpBack(event,this)">
+            <input type="text" maxlength="1" class="dash-otp" style="width:42px;height:50px;text-align:center;font-size:20px;font-weight:700;font-family:var(--mono);background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--acc);outline:none;" oninput="dashOtpNext(this)" onkeydown="dashOtpBack(event,this)">
+            <input type="text" maxlength="1" class="dash-otp" style="width:42px;height:50px;text-align:center;font-size:20px;font-weight:700;font-family:var(--mono);background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--acc);outline:none;" oninput="dashOtpNext(this)" onkeydown="dashOtpBack(event,this)">
+          </div>
+          <button class="login-btn" onclick="dashVerifyOTP()">Verify & Login</button>
+          <button onclick="dashResetOTP()" style="width:100%;padding:8px;background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;margin-top:6px;">Use different email</button>
+        </div>
+        <div class="login-msg" id="loginMsg">We'll send a 6-digit code to verify your email</div>
+      </div>
+      <div class="mt-pane" data-pane="phantom">
+        <p style="font-size:12px;color:var(--text3);margin-bottom:14px;line-height:1.6;text-align:center;">Connect Phantom wallet. If you hold <strong style="color:var(--acc);">$PHZL</strong>, your tier auto-unlocks.</p>
+        <button class="phantom-btn" id="phantomLoginBtn" onclick="loginPhantom()">
+          <span class="phantom-glyph">P</span>
+          <span id="phantomText">Connect Phantom</span>
+        </button>
+        <div class="login-msg" id="phantomMsg">Don't have Phantom? Install from phantom.app</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+/* ================ TOAST ================ */
+const toastWrap=document.getElementById('toasts');
+function toast(type,msg,ms=3500){
+  const icons={success:'solar:check-circle-bold',error:'solar:danger-triangle-bold',info:'solar:info-circle-bold'};
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.innerHTML=`<div class="toast-ico"><iconify-icon icon="${icons[type]||icons.info}"></iconify-icon></div><div class="toast-msg">${msg}</div><div class="toast-close">×</div>`;
+  el.querySelector('.toast-close').addEventListener('click',()=>el.remove());
+  toastWrap.appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity 0.3s';setTimeout(()=>el.remove(),300);},ms);
+}
+
+/* ================ TAB NAVIGATION ================ */
+function gotoTab(key){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===key));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.toggle('active',p.dataset.pane===key));
+  window.scrollTo({top:0,behavior:'smooth'});
+  history.replaceState(null,'','#'+key);
+}
+document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>gotoTab(b.dataset.tab)));
+// Restore from hash
+if(location.hash){const k=location.hash.slice(1);if(['overview','agents','trading','settings'].includes(k))gotoTab(k);}
+
+/* ================ DATA ================ */
+const dataSources=[
+  {name:'Binance / Exchange',desc:'API · real-time price',icon:'solar:chart-linear',status:'ok',label:'Connected'},
+  {name:'CoinGecko',desc:'API · market data',icon:'solar:graph-linear',status:'ok',label:'Active'},
+  {name:'DexScreener',desc:'API · SOL pairs',icon:'solar:chart-2-linear',status:'ok',label:'Active'},
+  {name:'Twitter / X feed',desc:'API · social',icon:'solar:hashtag-linear',status:'ok',label:'Connected'},
+  {name:'News RSS',desc:'Bloomberg feed',icon:'solar:documents-linear',status:'ok',label:'Connected'},
+  {name:'Database internal',desc:'SQL · logs',icon:'solar:database-linear',status:'ok',label:'Connected'},
+];
+
+const agents=[
+  {tag:'COORD-00',name:'Orchestrator',icon:'solar:server-path-linear',status:'running',label:'Running',active:true,desc:'Coordinates all agents. Routes user commands to the right agent, compiles their outputs.',tasks:34,uptime:'99.8%'},
+  {tag:'SCAN-01',name:'Market Scanner',icon:'solar:chart-square-linear',status:'scanning',label:'Scanning',desc:'Scans real-time price, volume, high/low, market cap. Sources: Binance, CoinGecko, DexScreener.',tasks:52,uptime:'99.9%'},
+  {tag:'CODE-02',name:'Code Runner',icon:'solar:programming-linear',status:'standby',label:'Standby',desc:'Auto-execute code — write, run, debug scripts/API calls.',tasks:12,uptime:'99.5%'},
+  {tag:'HUNT-03',name:'Signal Hunter',icon:'solar:graph-new-linear',status:'ready',label:'Ready',desc:'Technical analysis: RSI, MACD, MA, Bollinger Bands. Detect entry & exit signals.',tasks:28,uptime:'99.7%'},
+  {tag:'SOCI-04',name:'Social Monitor',icon:'solar:chat-round-dots-linear',status:'scanning',label:'Scanning',desc:'Monitor X/Twitter sentiment, trending topics, whale mentions, news velocity.',tasks:41,uptime:'99.2%'},
+  {tag:'RSCH-05',name:'Research Agent',icon:'solar:test-tube-linear',status:'standby',label:'Standby',desc:'Deep research — gather data from multiple sources, compile structured reports.',tasks:8,uptime:'99.9%'},
+  {tag:'EXEC-06',name:'Action Executor',icon:'solar:bolt-circle-linear',status:'ready',label:'Ready',desc:'Execute real actions: orders, notifications, triggers. Safety check before running.',tasks:17,uptime:'99.9%'},
+];
+
+const logs=[
+  {time:'09:14',body:'<span class="tag">COORD-00</span> Orchestrator <span class="arrow">→</span> Market Scanner: check BTC price'},
+  {time:'09:14',body:'<span class="tag">SCAN-01</span> Market Scanner: BTC $84,200, up 2.3%'},
+  {time:'09:15',body:'<span class="tag">COORD-00</span> Orchestrator <span class="arrow">→</span> Signal Hunter: any buy signal?'},
+  {time:'09:15',body:'<span class="tag">EXEC-06</span> Action Executor <span class="arrow">→</span> send notification'},
+];
+
+/* ================ RENDER ================ */
+function renderDS(){
+  const html=dataSources.map(d=>`
+    <div class="ds-row">
+      <div class="ds-info">
+        <div class="ds-icn"><iconify-icon icon="${d.icon}"></iconify-icon></div>
+        <div><div class="ds-name">${d.name}</div><div class="ds-desc">${d.desc}</div></div>
+      </div>
+      <span class="ds-status ${d.status}"><span class="d"></span>${d.label}</span>
+    </div>`).join('');
+  const el1=document.getElementById('dsList');if(el1) el1.innerHTML=html;
+  const el2=document.getElementById('settingsDsList');if(el2) el2.innerHTML=html;
+}
+
+function renderAgentMini(){
+  document.getElementById('agListMini').innerHTML=agents.slice(0,5).map(a=>`
+    <div class="ag-row ${a.active?'active':''}">
+      <div class="ag-info">
+        <div class="ag-icn"><iconify-icon icon="${a.icon}"></iconify-icon></div>
+        <div><div class="ag-nm">${a.name}</div><div class="ag-tg">${a.tag}</div></div>
+      </div>
+      <span class="ag-st ${a.status}"><span class="d"></span>${a.label}</span>
+    </div>`).join('');
+}
+
+function renderAgentCards(){
+  document.getElementById('agentCards').innerHTML=agents.map(a=>`
+    <div class="agent-card">
+      <div class="agent-card-top">
+        <div class="agent-card-ico"><iconify-icon icon="${a.icon}"></iconify-icon></div>
+        <div>
+          <div class="agent-card-name">${a.name}</div>
+          <div class="agent-card-tag">${a.tag}</div>
+        </div>
+      </div>
+      <div class="agent-card-desc">${a.desc}</div>
+      <div class="agent-card-stats">
+        <div class="acs-item">Status<span class="v" style="color:var(--acc);">${a.label}</span></div>
+        <div class="acs-item">Uptime<span class="v">${a.uptime}</span></div>
+        <div class="acs-item">Tasks today<span class="v">${a.tasks}</span></div>
+        <div class="acs-item">Tag<span class="v">${a.tag}</span></div>
+      </div>
+      <div class="agent-card-actions">
+        <button class="acd-btn primary" onclick="invokeAgent('${a.tag}','${a.name}')">
+          <iconify-icon icon="solar:play-linear"></iconify-icon>Invoke
+        </button>
+        <button class="acd-btn" onclick="toast('info','${a.name} logs — demo')">
+          <iconify-icon icon="solar:document-text-linear"></iconify-icon>Logs
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+function renderLogs(){
+  document.getElementById('logList').innerHTML=logs.slice(-8).reverse().map(l=>`
+    <div class="log-row"><div class="log-time">${l.time}</div><div class="log-body">${l.body}</div></div>
+  `).join('');
+}
+function addLog(body){
+  const time=new Date().toTimeString().slice(0,5);
+  logs.push({time,body});
+  renderLogs();
+}
+
+function invokeAgent(tag,name){
+  addLog(`<span class="tag">${tag}</span> ${name} manually invoked`);
+  toast('success',`${name} invoked — check activity log`);
+}
+
+/* ================ LIVE PRICE (CoinGecko) ================ */
+let currentPrice=84200,priceChange=2.3,volume24h=38.4,high24h=85100,low24h=82300;
+async function fetchLivePrice(){
+  try{
+    const res=await fetch('https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false');
+    if(!res.ok) throw new Error('fetch failed');
+    const data=await res.json();
+    const md=data.market_data;
+    currentPrice=md.current_price.usd;
+    priceChange=md.price_change_percentage_24h;
+    volume24h=(md.total_volume.usd/1e9).toFixed(1);
+    high24h=md.high_24h.usd;
+    low24h=md.low_24h.usd;
+    updatePriceDisplay();
+  }catch(e){console.warn('CoinGecko fetch failed',e);}
+}
+function formatPrice(n){return '$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});}
+function updatePriceDisplay(){
+  ['outPrice','orderPrice'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=formatPrice(currentPrice);});
+  const vEl=document.getElementById('outVol'); if(vEl) vEl.textContent='$'+volume24h+'B';
+  const hEl=document.getElementById('outHigh'); if(hEl) hEl.textContent=formatPrice(high24h);
+  const lEl=document.getElementById('outLow'); if(lEl) lEl.textContent=formatPrice(low24h);
+  const cEl=document.getElementById('outChange');
+  if(cEl){
+    const up=priceChange>=0;
+    cEl.className='price-chg'+(up?'':' red');
+    cEl.innerHTML=`<iconify-icon icon="solar:arrow-${up?'up':'down'}-linear"></iconify-icon>${up?'+':''}${Number(priceChange).toFixed(2)}%`;
+  }
+  recalcOrder();
+}
+
+/* ================ CLOCK ================ */
+function updateClock(){
+  const d=new Date();
+  const oT=document.getElementById('overviewTime');
+  if(oT) oT.textContent=d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const t=d.toTimeString().slice(0,5);
+  const outTime=document.getElementById('outTime'); if(outTime) outTime.textContent=t;
+  const outTS=document.getElementById('outTimeSection'); if(outTS) outTS.textContent=t;
+}
+setInterval(updateClock,1000);
+
+/* ================ CHAT - FLOW ================ */
+const chatInput=document.getElementById('chatInput');
+const chatSend=document.getElementById('chatSend');
+
+chatInput.addEventListener('input',()=>{
+  chatInput.style.height='auto';
+  chatInput.style.height=Math.min(chatInput.scrollHeight,160)+'px';
+});
+chatInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();handleChat();}});
+chatSend.addEventListener('click',handleChat);
+
+document.querySelectorAll('.q-chip').forEach(c=>c.addEventListener('click',()=>{
+  chatInput.value=c.dataset.q;handleChat();
+}));
+
+let chatHistory = [];
+
+async function handleChat(){
+  const text=chatInput.value.trim();
+  if(!text) return;
+
+  // Check login
+  const token = localStorage.getItem('haze_token');
+  if(!token){ toast('error','Please login to use the agent console.'); openLogin(); return; }
+
+  chatSend.disabled=true;chatSend.innerHTML='Processing...<iconify-icon icon="solar:refresh-linear"></iconify-icon>';
+
+  addLog(`<span class="tag">USER</span> ${text}`);
+  chatHistory.push({role:'user', content: text});
+
+  // Show flow animation while waiting
+  gotoTab('trading');
+  document.getElementById('tradingEmpty').style.display='none';
+  document.getElementById('tradingContent').style.display='block';
+  const flowList=document.getElementById('flowList');
+
+  const flowStep = (num,tag,agent,title,desc) => {
+    const el=document.createElement('div');
+    el.className='step fx-in';
+    el.innerHTML=`<div class="step-num">${num}</div><div class="step-tag">${tag}${agent?` <span class="divider">·</span> <span class="agent-name">${agent}</span>`:''}</div><div class="step-body"><h4>${title}</h4><p>${desc}</p></div>`;
+    flowList.appendChild(el);
+  };
+
+  flowList.innerHTML='';
+  flowStep(1,'USER','',`"${text}"`,'Command received by system.');
+  await new Promise(r=>setTimeout(r,300));
+  flowStep(2,'COORD-00','Orchestrator','Routing to agent...','Determining the best agent for this task.');
+
+  try {
+    const res = await fetch('api/chat.php', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body: JSON.stringify({ agent:'orchestrator', messages: chatHistory.slice(-10) })
+    });
+    const data = await res.json();
+
+    if(data.ok) {
+      await new Promise(r=>setTimeout(r,200));
+      flowStep(3,data.agent?.toUpperCase()||'AGENT', data.agent_name||'Agent', 'Processing response...', 'Agent is analyzing and composing a response.');
+      await new Promise(r=>setTimeout(r,300));
+
+      // Show reply in flow
+      const replyEl=document.createElement('div');
+      replyEl.className='step fx-in';
+      replyEl.innerHTML=`<div class="step-num">4</div><div class="step-tag">REPLY <span class="divider">·</span> <span class="agent-name">${data.agent_name||'Agent'}</span></div><div class="step-body"><h4>Output</h4><div style="white-space:pre-wrap;font-size:12px;line-height:1.7;color:var(--text2);margin-top:8px;">${data.reply.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div>`;
+      flowList.appendChild(replyEl);
+
+      chatHistory.push({role:'assistant', content: data.reply});
+      addLog(`<span class="tag">${(data.agent||'AGENT').toUpperCase()}</span> Response delivered`);
+      toast('success','Agent response ready — check Trading tab');
+    } else {
+      flowStep(3,'ERROR','','Failed','! '+(data.error||'Something went wrong'));
+      toast('error', data.error || 'Agent error');
+    }
+  } catch(e) {
+    flowStep(3,'ERROR','','Network Error','Unable to connect to server.');
+    toast('error','Network error — check your connection');
+  }
+
+  await fetchLivePrice();
+  chatInput.value='';chatInput.style.height='auto';
+  chatSend.disabled=false;chatSend.innerHTML='Send<iconify-icon icon="solar:plain-linear"></iconify-icon>';
+}
+
+/* ================ ORDER ================ */
+function openOrderPanel(){
+  document.getElementById('orderSection').style.display='block';
+  document.getElementById('orderSection').scrollIntoView({behavior:'smooth',block:'start'});
+  toast('info','Order panel opened');
+}
+
+const orderSlider=document.getElementById('orderSlider');
+const orderAmt=document.getElementById('orderAmt');
+let orderTypeCur='market';
+
+orderSlider.addEventListener('input',()=>{
+  orderAmt.textContent='$'+Number(orderSlider.value).toLocaleString();
+  recalcOrder();
+});
+function recalcOrder(){
+  if(!orderSlider) return;
+  const amt=Number(orderSlider.value);
+  const btc=(amt/currentPrice).toFixed(5);
+  const fee=(amt*0.001).toFixed(2);
+  const btcEl=document.getElementById('orderBtc'); if(btcEl) btcEl.textContent=btc+' BTC';
+  const feeEl=document.getElementById('orderFee'); if(feeEl) feeEl.textContent='-$'+fee;
+  const sumTotal=document.getElementById('sumTotal'); if(sumTotal) sumTotal.textContent='$'+amt.toLocaleString();
+  const sumBtc=document.getElementById('sumBtc'); if(sumBtc) sumBtc.textContent=btc+' BTC';
+  const sumType=document.getElementById('sumType');
+  if(sumType) sumType.textContent={market:'Market',limit:'Limit',stoploss:'Stop Loss'}[orderTypeCur];
+}
+
+document.querySelectorAll('.order-tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.order-tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  orderTypeCur=t.dataset.order;
+  recalcOrder();
+  toast('info','Type order: '+t.textContent);
+}));
+
+function runSafetyCheck(){
+  document.getElementById('safetyCheck').style.display='block';
+  document.getElementById('safetyCheck').scrollIntoView({behavior:'smooth',block:'start'});
+  addLog(`<span class="tag">EXEC-06</span> Safety check started`);
+  setTimeout(()=>toast('success','Safety check complete — 3 OK, 1 warning'),600);
+}
+
+function executeOrder(){
+  const amt=orderSlider.value;
+  addLog(`<span class="tag">EXEC-06</span> Order BTC $${amt} EXECUTED`);
+  toast('success',`Order BTC $${Number(amt).toLocaleString()} success (simulation)!`);
+  const ac=document.getElementById('actionCount');
+  if(ac) ac.textContent=Number(ac.textContent)+1;
+  setTimeout(()=>{
+    document.getElementById('stopLossSection').style.display='block';
+    document.getElementById('stopLossSection').scrollIntoView({behavior:'smooth',block:'start'});
+  },800);
+}
+
+function cancelOrder(){
+  document.getElementById('safetyCheck').style.display='none';
+  document.getElementById('orderSection').style.display='none';
+  toast('info','Order cancelled');
+}
+
+/* ================ STOP LOSS ================ */
+function openStopLoss(){
+  document.getElementById('stopLossSection').style.display='block';
+  document.getElementById('stopLossSection').scrollIntoView({behavior:'smooth',block:'start'});
+  toast('info','Stop loss panel');
+}
+
+const slSlider=document.getElementById('slSlider');
+const BUY_PRICE=84186;
+const BTC_AMT=0.00594;
+function recalcSL(){
+  const pct=Number(slSlider.value);
+  const stopPrice=BUY_PRICE*(1-pct/100);
+  const maxLoss=(BUY_PRICE-stopPrice)*BTC_AMT;
+  const remain=500-maxLoss;
+  document.getElementById('slPct').textContent=pct+'%';
+  document.getElementById('slPrice').textContent='$'+stopPrice.toLocaleString('en-US',{maximumFractionDigits:0});
+  document.getElementById('slLoss').textContent='-$'+maxLoss.toFixed(2);
+  document.getElementById('slRemain').textContent='$'+remain.toFixed(2);
+  const sl=document.getElementById('simSlPrice'); if(sl) sl.textContent='$'+stopPrice.toLocaleString('en-US',{maximumFractionDigits:0});
+  const sv=document.getElementById('simSaved'); if(sv) sv.textContent='$'+maxLoss.toFixed(2);
+}
+slSlider.addEventListener('input',recalcSL);
+
+document.querySelectorAll('.sl-opt').forEach(o=>o.addEventListener('click',()=>{
+  document.querySelectorAll('.sl-opt').forEach(x=>x.classList.remove('active'));
+  o.classList.add('active');
+  if(o.dataset.sl==='trailing'){
+    setTimeout(()=>{
+      document.getElementById('trailingSection').style.display='block';
+      document.getElementById('trailingSection').scrollIntoView({behavior:'smooth',block:'start'});
+      drawTrailChart(0);
+    },200);
+  }
+}));
+
+document.querySelectorAll('.toggle').forEach(t=>t.addEventListener('click',()=>{
+  t.classList.toggle('on');
+  const names={
+    dash:'Dashboard notif',wa:'Telegram/WA',auto:'Auto-sell',warn:'Early warning',
+    notif_dash:'Dashboard notifications',notif_email:'Email alerts',notif_tg:'Telegram/WA',auto_exec:'Auto-execute',
+  };
+  const label=names[t.dataset.t||t.dataset.set]||'Setting';
+  toast('info',label+' '+(t.classList.contains('on')?'enabled':'disabled'));
+}));
+
+function activateStopLoss(){
+  const pct=slSlider.value;
+  const price=document.getElementById('slPrice').textContent;
+  addLog(`<span class="tag">EXEC-06</span> Stop loss ${pct}% active at ${price}`);
+  toast('success',`Stop loss ${pct}% active at ${price}`);
+}
+
+function openTrailing(){
+  document.getElementById('trailingSection').style.display='block';
+  document.getElementById('trailingSection').scrollIntoView({behavior:'smooth',block:'start'});
+  drawTrailChart(0);
+}
+
+/* ================ TRAILING SIM ================ */
+const trailStages=[
+  {title:'Initial entry',price:84186,stop:79977,pnl:0,desc:'Bought BTC at $84,186 — trailing stop 5% active at <strong>$79,977</strong>. Agent monitoring price every second.'},
+  {title:'BTC rises to $88,000',price:88000,stop:83600,pnl:22.65,desc:'Price up 4.5%. Trailing stop automatically RISES to <strong>$83,600</strong>. Locked profit $22+.'},
+  {title:'BTC rises to $92,500',price:92500,stop:87875,pnl:49.38,desc:'Rally to $92,500. Trailing stop rises to <strong>$87,875</strong>. Minimum locked profit $49.'},
+  {title:'BTC drops to $89,000',price:89000,stop:87875,pnl:28.63,desc:'Correction 3.8%. Trailing stop HOLDS at <strong>$87,875</strong>. Not triggered, still $28 profit.'},
+  {title:'BTC hits trailing stop!',price:87870,stop:87875,pnl:21.90,desc:'BTC hits trailing stop level. Action Executor AUTO-SELLS. Final profit: <strong>+$21.90</strong>. With fixed stop loss, profits would not be protected!'},
+];
+
+function drawTrailChart(stage){
+  const canvas=document.getElementById('trailCanvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.offsetWidth,H=canvas.offsetHeight;
+  if(W===0||H===0) return;
+  canvas.width=W*dpr; canvas.height=H*dpr; ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+
+  const prices=[84186,85500,87200,88000,90500,92500,91000,89000,87870];
+  const stops=[79977,79977,81340,83600,85975,87875,87875,87875,87875];
+  const yMin=78000,yMax=94000;
+  const padX=30,padY=20;
+  const chartW=W-padX*2, chartH=H-padY*2;
+  const mapX=i=>padX+(i/(prices.length-1))*chartW;
+  const mapY=v=>padY+chartH-((v-yMin)/(yMax-yMin))*chartH;
+
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=padY+(i/4)*chartH;ctx.beginPath();ctx.moveTo(padX,y);ctx.lineTo(W-padX,y);ctx.stroke();}
+
+  const showPts=[1,3,5,7,9][stage];
+  ctx.strokeStyle='rgba(196,37,227,0.75)';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+  ctx.beginPath();
+  for(let i=0;i<showPts;i++){const x=mapX(i),y=mapY(stops[i]);if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);}
+  ctx.stroke();ctx.setLineDash([]);
+
+  ctx.strokeStyle='#60a5fa';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let i=0;i<showPts;i++){const x=mapX(i),y=mapY(prices[i]);if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);}
+  ctx.stroke();
+
+  ctx.strokeStyle='rgba(81,207,102,0.6)';ctx.lineWidth=1;ctx.setLineDash([2,4]);
+  ctx.beginPath();const bY=mapY(84186);ctx.moveTo(padX,bY);ctx.lineTo(W-padX,bY);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='rgba(81,207,102,0.85)';ctx.font='10px JetBrains Mono';
+  ctx.fillText('buy $84,186',padX+4,bY-4);
+
+  ctx.fillStyle='rgba(176,168,204,0.6)';ctx.font='9px JetBrains Mono';
+  ctx.fillText('$94k',4,padY+8);
+  ctx.fillText('$86k',4,padY+chartH*0.5);
+  ctx.fillText('$78k',4,padY+chartH-4);
+
+  if(showPts>0){
+    const lastIdx=showPts-1;
+    const x=mapX(lastIdx),y=mapY(prices[lastIdx]);
+    ctx.fillStyle='#60a5fa';ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();
+    if(stage===4){ctx.fillStyle='#ff6b6b';ctx.beginPath();ctx.arc(x,y,6,0,Math.PI*2);ctx.fill();}
+  }
+
+  ctx.font='9px Inter';
+  let lx=W-155;
+  ctx.fillStyle='#60a5fa';ctx.fillRect(lx,6,8,2);
+  ctx.fillStyle='rgba(176,168,204,0.9)';ctx.fillText('BTC Price',lx+12,10);
+  ctx.fillStyle='#51cf66';ctx.fillRect(lx+70,6,8,2);
+  ctx.fillStyle='rgba(176,168,204,0.9)';ctx.fillText('Buy',lx+82,10);
+  ctx.fillStyle='#c425e3';ctx.fillRect(lx+100,6,8,2);
+  ctx.fillStyle='rgba(176,168,204,0.9)';ctx.fillText('Trailing stop',lx+112,10);
+}
+
+document.querySelectorAll('.trail-step').forEach(s=>s.addEventListener('click',()=>{
+  document.querySelectorAll('.trail-step').forEach(x=>x.classList.remove('active'));
+  s.classList.add('active');
+  const i=Number(s.dataset.ts);
+  const stage=trailStages[i];
+  document.getElementById('trailPrice').textContent='$'+stage.price.toLocaleString();
+  document.getElementById('trailStop').textContent='$'+stage.stop.toLocaleString();
+  const pnl=stage.pnl;
+  const pnlEl=document.getElementById('trailPnl');
+  pnlEl.textContent=(pnl>=0?'+':'-')+'$'+Math.abs(pnl).toFixed(2);
+  pnlEl.className='v '+(pnl>0?'green':pnl<0?'red':'');
+  document.getElementById('trailStageTitle').textContent=stage.title;
+  document.getElementById('trailDesc').innerHTML=stage.desc;
+  drawTrailChart(i);
+}));
+
+function activateTrailing(){
+  addLog(`<span class="tag">EXEC-06</span> Trailing stop 5% active`);
+  toast('success','Trailing stop active! Agent will auto-lock profits.');
+}
+
+/* ================ LOGIN ================ */
+const loginModal=document.getElementById('loginModal');
+function openLogin(){loginModal.classList.add('show');}
+document.getElementById('loginBtn').addEventListener('click',openLogin);
+function closeLogin(){loginModal.classList.remove('show');}
+loginModal.addEventListener('click',e=>{if(e.target===loginModal) closeLogin();});
+
+document.querySelectorAll('.mt-tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.mt-tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.querySelectorAll('.mt-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelector(`[data-pane="${t.dataset.mt}"]`).classList.add('active');
+}));
+
+let _dashOtpEmail='';
+function dashOtpNext(el){if(el.value.length===1){const n=el.nextElementSibling;if(n&&n.classList.contains('dash-otp'))n.focus();}}
+function dashOtpBack(e,el){if(e.key==='Backspace'&&el.value===''){const p=el.previousElementSibling;if(p&&p.classList.contains('dash-otp')){p.focus();p.value='';}}}
+
+async function dashSendOTP(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const msg=document.getElementById('loginMsg');
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){msg.style.color='var(--red)';msg.textContent='Enter a valid email address';return;}
+  msg.style.color='var(--text3)';msg.textContent='Sending code...';
+  try{
+    const res=await fetch('api/otp-send.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const data=await res.json();
+    if(data.ok){
+      _dashOtpEmail=email;
+      document.getElementById('dashOtpEmailShow').textContent=email;
+      document.getElementById('dashOtpStep1').style.display='none';
+      document.getElementById('dashOtpStep2').style.display='block';
+      msg.style.color='var(--green)';msg.textContent='Code sent! Check your inbox.';
+      document.querySelector('.dash-otp').focus();
+    } else { msg.style.color='var(--red)';msg.textContent=data.error||'Failed'; }
+  }catch(e){msg.style.color='var(--red)';msg.textContent='Network error';}
+}
+
+async function dashVerifyOTP(){
+  const digits=document.querySelectorAll('.dash-otp');
+  const code=Array.from(digits).map(d=>d.value).join('');
+  const msg=document.getElementById('loginMsg');
+  if(code.length!==6){msg.style.color='var(--red)';msg.textContent='Enter all 6 digits';return;}
+  msg.style.color='var(--text3)';msg.textContent='Verifying...';
+  try{
+    const res=await fetch('api/otp-verify.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:_dashOtpEmail,code})});
+    const data=await res.json();
+    if(data.ok){
+      localStorage.setItem('haze_token',data.token);
+      msg.style.color='var(--green)';msg.textContent='Logged in!';
+      closeLogin(); checkDashAuth(); toast('success','Login successful!');
+    } else { msg.style.color='var(--red)';msg.textContent=data.error||'Invalid code'; }
+  }catch(e){msg.style.color='var(--red)';msg.textContent='Network error';}
+}
+
+function dashResetOTP(){
+  document.getElementById('dashOtpStep1').style.display='block';
+  document.getElementById('dashOtpStep2').style.display='none';
+  document.querySelectorAll('.dash-otp').forEach(d=>d.value='');
+  document.getElementById('loginMsg').style.color='var(--text3)';
+  document.getElementById('loginMsg').textContent="We'll send a 6-digit code to verify your email";
+}
+
+async function loginPhantom(){
+  const msg=document.getElementById('phantomMsg');
+  const txt=document.getElementById('phantomText');
+  if(!window.solana||!window.solana.isPhantom){msg.style.color='var(--red)';msg.textContent='Phantom not detected. Install from phantom.app';return;}
+  try{
+    txt.textContent='Connecting...';
+    const resp=await window.solana.connect();
+    const wallet=resp.publicKey.toString();
+    txt.textContent=wallet.slice(0,4)+'...'+wallet.slice(-4);
+    const res=await fetch('api/wallet-login.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet})});
+    const data=await res.json();
+    if(data.ok){
+      localStorage.setItem('haze_token',data.token);
+      msg.style.color='var(--green)';msg.textContent='Logged in!';
+      closeLogin(); checkDashAuth(); toast('success','Wallet connected & logged in!');
+    } else { msg.style.color='var(--red)';msg.textContent=data.error||'Login failed'; }
+  }catch(e){
+    txt.textContent='Connect Phantom';msg.style.color='var(--red)';msg.textContent='Connection cancelled';
+  }
+}
+
+function finishLogin(label,toastMsg){
+  document.getElementById('loginLabel').textContent=label;
+  const accSt=document.getElementById('accStatus');
+  const accDesc=document.getElementById('accStatusDesc');
+  if(accSt){accSt.className='ds-status ok';accSt.innerHTML='<span class="d"></span>'+label;}
+  if(accDesc){accDesc.textContent='Logged in as '+label+'.';}
+  setTimeout(()=>{closeLogin();toast('success',toastMsg);},1200);
+}
+
+/* ================ INIT ================ */
+renderDS();
+renderAgentMini();
+renderAgentCards();
+renderLogs();
+updateClock();
+fetchLivePrice();
+recalcSL();
+recalcOrder();
+setInterval(fetchLivePrice,60000);
+setInterval(()=>{
+  const el=document.getElementById('taskCount');
+  if(el) el.textContent=Number(el.textContent)+Math.floor(Math.random()*3);
+},20000);
+
+
+/* ================ AUTH CHECK ================ */
+function checkDashAuth(){
+  const token = localStorage.getItem('haze_token');
+  if(token){
+    document.body.classList.add('logged-in');
+    // Optionally fetch user info
+    fetch('api/me.php',{headers:{'Authorization':'Bearer '+token}})
+      .then(r=>r.json()).then(d=>{
+        if(!d.ok){localStorage.removeItem('haze_token');document.body.classList.remove('logged-in');}
+      }).catch(()=>{});
+  } else {
+    document.body.classList.remove('logged-in');
+  }
+}
+checkDashAuth();
+
+/* ================ AGENT CONSOLE TERMINAL ================ */
+(function initTerminal(){
+  const body=document.getElementById('termBody');
+  const input=document.getElementById('termInput');
+  const send=document.getElementById('termSend');
+  if(!body||!input||!send) return;
+
+  let history=[];
+
+  // route a problem to the agent whose job it is to answer
+  const ROUTES=[
+    {key:'market_scanner',  name:'Market Scanner',  re:/\b(price|market|scan|chart|volume|candle|btc|eth|sol|pump|dump|market\s?cap|liquidity)\b/i},
+    {key:'signal_hunter',   name:'Signal Hunter',   re:/\b(signal|alpha|entry|exit|rsi|macd|indicator|setup|long|short|trade|buy|sell|target|stop)\b/i},
+    {key:'social_monitor',  name:'Social Monitor',  re:/\b(twitter|tweet|sentiment|social|telegram|trend|narrative|community|hype|fud|mentions?)\b/i},
+    {key:'code_runner',     name:'Code Runner',     re:/\b(code|script|bug|error|function|contract|solidity|php|javascript|python|api|deploy|debug)\b/i},
+    {key:'research_agent',  name:'Research Agent',  re:/\b(research|explain|what\s+is|how\s+(do|does|to)|compare|analysis|report|why|overview)\b/i},
+    {key:'action_executor', name:'Action Executor', re:/\b(execute|action|order|send|trigger|automate|run|schedule|do\s+it)\b/i},
+  ];
+  function route(t){ for(const r of ROUTES){ if(r.re.test(t)) return r; } return {key:'orchestrator',name:'Orchestrator'}; }
+  const esc=s=>String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  function line(cls,who,html){
+    const el=document.createElement('div');
+    el.className='term-line '+cls;
+    el.innerHTML=(who?`<span class="who">${who}</span>`:'')+(html||'');
+    body.appendChild(el); body.scrollTop=body.scrollHeight;
+    return el;
+  }
+
+  async function run(){
+    const text=input.value.trim();
+    if(!text) return;
+    const token=localStorage.getItem('haze_token');
+    if(!token){ line('err','[auth]','login required — opening login…'); if(typeof openLogin==='function') openLogin(); return; }
+
+    input.value=''; send.disabled=true; input.disabled=true;
+    line('user','user@phzl ›', esc(text));
+
+    const agent=route(text);
+    line('route','', '↳ routing to <strong style="color:var(--acc)">'+agent.name+'</strong>…');
+    const out=line('agent', agent.name+' ›', '<span class="term-cursor"></span>');
+
+    history.push({role:'user',content:text});
+    try{
+      const res=await fetch('api/chat.php',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+        body:JSON.stringify({agent:agent.key, messages:history.slice(-10)})
+      });
+      const data=await res.json();
+      if(data.ok){
+        out.innerHTML=`<span class="who">${esc(data.agent_name||agent.name)} ›</span>`+esc(data.reply);
+        history.push({role:'assistant',content:data.reply});
+        if(typeof addLog==='function') addLog(`<span class="tag">${esc((data.agent||agent.key).toUpperCase())}</span> answered in console`);
+      } else {
+        out.className='term-line err';
+        out.innerHTML='<span class="who">[error]</span>'+esc(data.error||'something went wrong');
+      }
+    }catch(e){
+      out.className='term-line err';
+      out.innerHTML='<span class="who">[error]</span>network error — is the server running?';
+    }
+    body.scrollTop=body.scrollHeight;
+    send.disabled=false; input.disabled=false; input.focus();
+  }
+
+  send.addEventListener('click',run);
+  input.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); run(); }});
+})();
+</script>
+</body>
+</html>
